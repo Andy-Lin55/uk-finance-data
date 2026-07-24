@@ -1,0 +1,18 @@
+# Python
+__pycache__/
+*.pyc
+.venv/
+
+# OS
+.DS_Store
+
+# Secrets (if ever added)
+secrets.env
+
+# Large raw downloads (keep dir, ignore contents)
+raw/*.xlsx
+raw/*.xls
+raw/*.csv
+
+# Caches
+.cache/
