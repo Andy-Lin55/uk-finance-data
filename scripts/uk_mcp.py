@@ -1,6 +1,6 @@
 # /// script
 # requires-python = ">=3.9"
-# dependencies = ["mcp", "pandas", "yfinance"]
+# dependencies = ["mcp>=1.8.0,<2.0.0", "pandas", "yfinance"]
 # ///
 """UK finance data MCP server.
 
@@ -34,7 +34,10 @@ def boe_series(series_ids: list[str] | None = None, start: str = "01/Jan/2015", 
     """Bank of England IADB macro series. Omit series_ids for the curated set
     (Bank Rate, SONIA, FX, consumer credit, M4). Dates as DD/Mon/YYYY."""
     from boe_iadb import fetch_series, CURATED_SERIES
-    df = fetch_series(series_ids, start=start, end=end)
+    try:
+        df = fetch_series(series_ids, start=start, end=end)
+    except Exception as e:
+        return {"error": f"{type(e).__name__}: {e}", "curated": CURATED_SERIES}
     return {
         "curated": CURATED_SERIES,
         "rows": len(df),
@@ -51,6 +54,8 @@ def ons_data(series_id: str = "L55O"):
         df = fetch_timeseries(series_id.upper())
     except KeyError as e:
         return {"error": str(e), "headline": HEADLINE_SERIES}
+    except Exception as e:
+        return {"error": f"{type(e).__name__}: {e}", "headline": HEADLINE_SERIES}
     if df.empty:
         return {"error": f"no data for {series_id}"}
     return {
@@ -65,7 +70,10 @@ def bankstats(start: str = "01/Jan/2015"):
     """UK banking / MFI aggregates: consumer credit net lending & growth,
     secured lending, mortgage approvals, M4, loans to businesses/SMEs."""
     from fetch_bankstats import fetch_banking_aggregates, BANKING_SERIES
-    df = fetch_banking_aggregates(start=start)
+    try:
+        df = fetch_banking_aggregates(start=start)
+    except Exception as e:
+        return {"error": f"{type(e).__name__}: {e}", "series": BANKING_SERIES}
     return {
         "series": BANKING_SERIES,
         "rows": len(df),
