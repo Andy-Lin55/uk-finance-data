@@ -51,7 +51,16 @@ Or register it (Claude / WorkBuddy `mcp.json`):
 
 ```bash
 python3 scripts/fetch_bankstats.py   # writes processed/banking_aggregates.csv
+python3 scripts/validate_bankstats.py processed/banking_aggregates.csv
 ```
+
+GitHub Actions runs `.github/workflows/monthly-refresh.yml` on the 8th of each
+month at 06:35 UTC and can also be started manually. It fetches the official
+BoE series, rejects lost periods or previously published values, and commits
+the CSV only after validation. The monthly OneDrive sync checks that workflow
+before placing a new dated copy under `投资/银行/UK/processed/`; existing files
+are never replaced. Macro and LSE tools remain live, on-demand queries rather
+than scheduled snapshots.
 
 ## Data caveats
 

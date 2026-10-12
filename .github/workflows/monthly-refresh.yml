@@ -1,0 +1,42 @@
+name: Refresh UK banking data
+
+on:
+  schedule:
+    - cron: '35 6 8 * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: uk-banking-refresh
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+          cache-dependency-path: requirements-refresh.txt
+      - run: python -m pip install -r requirements-refresh.txt
+      - name: Fetch and validate BoE monthly series
+        run: |
+          cp processed/banking_aggregates.csv "$RUNNER_TEMP/banking_aggregates_previous.csv"
+          python scripts/fetch_bankstats.py
+          python scripts/validate_bankstats.py processed/banking_aggregates.csv --previous "$RUNNER_TEMP/banking_aggregates_previous.csv"
+          python -m unittest discover -s tests -v
+      - name: Commit changed data
+        run: |
+          if git diff --quiet -- processed/banking_aggregates.csv; then
+            echo "No source changes"
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add processed/banking_aggregates.csv
+          git commit -m "data: refresh UK banking aggregates"
+          git push

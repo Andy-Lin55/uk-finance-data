@@ -31,6 +31,11 @@ For the full panel, read `processed/banking_aggregates.csv` (refresh:
 `python3 scripts/fetch_bankstats.py`). Granular per-table Bankstats detail: drop the
 current BoE XLSX into `raw/` and call `parse_bankstats_xlsx()`.
 
+The persisted panel refreshes monthly through GitHub Actions on the 8th at
+06:35 UTC. A validated newer version is then copied to OneDrive as a dated
+CSV under `投资/银行/UK/processed/` by the existing monthly sync. Macro and LSE
+tools remain live queries and are not part of that persisted panel.
+
 **Coverage gap**: recent consumer-credit *total* can be NaN while subcomponents publish
 a month ahead — a real gap, not a bug (same as Mexico CNBV).
 
