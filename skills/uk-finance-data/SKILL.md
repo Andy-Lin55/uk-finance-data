@@ -35,6 +35,8 @@ The persisted panel refreshes monthly through GitHub Actions on the 8th at
 06:35 UTC. A validated newer version is then copied to OneDrive as a dated
 CSV under `投资/银行/UK/processed/` by the existing monthly sync. Macro and LSE
 tools remain live queries and are not part of that persisted panel.
+For the latest scheduled snapshot, use the newest dated OneDrive CSV; the
+local repository checkout is not automatically merged with GitHub.
 
 **Coverage gap**: recent consumer-credit *total* can be NaN while subcomponents publish
 a month ahead — a real gap, not a bug (same as Mexico CNBV).
